@@ -1,137 +1,160 @@
 var allDevices = [];
-var sum1=[];
+
+
+var section1 = document.getElementById("section");
+var table = document.createElement("table");
+section1.appendChild(table);
+var header = document.createElement("tr");
+table.appendChild(header);
+
+
 
 function Device(item, category, quantity) {
-    this.item = item;
-    this.category = category;
-    this.random_price = 0;
-    this.total_price = 0;
-    this.quantity = quantity;
+  this.item = item;
+  this.category = category;
+  this.quantity = quantity;
+  this.random_price = [];
+  this.total_price = [];
 
-    allDevices.push(this);
 
+  allDevices.push(this);
 }
 
-Device.prototype.getRandomPrice = function (min,max) {
-    for (var i = 0; i < allDevices.length; i++) {
-        this.random_price[i] = randomNum(min, max);
-    }
+Device.prototype.getRandomPrice = function (min, max) {
+
+  this.random_price = randomNum(min, max);
+  console.log(this.random_price);
+
 };
+var sum = [];
+var total=[];
 Device.prototype.getTotalPrice = function () {
-    var iteration;
-    var sum = 0;
-    for (var i = 0; i < allDevices.length; i++) {
-        iteration = Math.floor(this.random_price[i] * this.quantity);
-        this.total_price[i] = iteration;
-        sum += iteration;
-        sum1[i] +=iteration;
-        
+
+  var iteration;
 
 
-    }
-    this.total_price.push(sum);
-    sum1[sum1.length-1] += sum;
+  iteration = Math.floor(this.random_price * this.quantity);
 
+  sum.push(iteration);
+  console.log(sum);
+
+  var sum2 = sum.reduce(function (acc, value) {
+    return acc + value;
+  }, 0);
+  console.log(sum2);
+  this.total_price.push(sum2);
+  console.log(this.total_price);
+this.total_price.push(sum2);
+total.push(sum2);
+
+console.log(sum);
 
 };
-function renderTable() {
-    var section1 = document.getElementById('section');
-    var table = document.createElement('table');
-    section1.appendChild(table);
-    var header = document.createElement('tr');
-    table.appendChild(header);
-    var headName1 = document.createElement('th');
-    headName1.textContent = 'Device Name';
-    header.appendChild(headName1);
-    var headName2 = document.createElement('th');
-    headName2.textContent = 'Quantity';
-    header.appendChild(headName2);
-    var headName3 = document.createElement('th');
-    headName3.textContent = 'Unit Price';
-    header.appendChild(headName3);
-
-    var DataRow = document.createElement('tr');
-    table.appendChild(DataRow);
-    for (var k = 0; k < allDevices.length; k++) {
-        var DataInfo1 = document.createElement('td');
-        DataInfo1.textContent = this.quantity[k];
-        DataRow.appendChild(DataInfo1);
-        var DataInfo2 = document.createElement('td');
-        DataInfo2.textContent = this.random_price;
-        DataRow.appendChild(DataInfo2);
-        var DataInfo3= document.createElement('td');
-        DataInfo3.textContent = this.category;
-        DataRow.appendChild(DataInfo3);
-
-
-
-    }
-    var TotalRow =document.createElement('tr');
-    for (var t =0;t<sum1.length;t++)
-    TotalRow.textContent =this.total_price[t] ;
-    table.appendChild(TotalRow);
+console.log(total);
 
 
 
 
+function addheader() {
+  var header = document.createElement('tr');
+  table.appendChild(header);
+  var headName1 = document.createElement("th");
+  headName1.textContent = "Device Name";
+  header.appendChild(headName1);
+  var headName2 = document.createElement("th");
+  headName2.textContent = "Quantity";
+  header.appendChild(headName2);
+  var headName3 = document.createElement("th");
+  headName3.textContent = "Unit Price";
+  header.appendChild(headName3);
+  var headName4 = document.createElement("th");
+  headName4.textContent = "Category";
+  header.appendChild(headName4);
 }
 
-var form = document.getElementById('form');
-form.addEventListener("submit", function (event) {
+Device.prototype.renderTable = function () {
 
-    event.preventDefault();
+  var DataRow = document.createElement("tr");
+  table.appendChild(DataRow);
 
-    var item1 = event.target.item.value;
-    var category1 = event.target.category.value;
-    var quantity1 = event.target.quantity.value;
-    quantity1 = Number(quantity1);
+  var DataInfo1 = document.createElement("td");
+  DataInfo1.textContent = this.item;
+  DataRow.appendChild(DataInfo1);
+  var DataInfo2 = document.createElement("td");
+  DataInfo2.textContent = this.quantity;
+  DataRow.appendChild(DataInfo2);
+  var DataInfo3 = document.createElement("td");
+  DataInfo3.textContent = this.random_price;
+  DataRow.appendChild(DataInfo3);
+  var DataInfo4 = document.createElement("td");
+  DataInfo4.textContent = this.category;
+  DataRow.appendChild(DataInfo4);
 
-    new Device(item1, category1 , quantity1);
-    for (var i = 0;i<allDevices.length;i++){
+  
+  
 
+  
+
+};
+
+function addfooter (){
+  var footer = document.createElement('tr');
+  
+table.appendChild(footer);
+var TotalRow = document.createElement('td');
+footer.appendChild(TotalRow);
+  for (var tot = 0; tot < total.length; tot++) {
     
+    
+    TotalRow.textContent =`Total : ${total[tot]} ` ;
+   
+}
+}
+
+
+var form = document.getElementById("form");
+form.addEventListener('submit', function (event) {
+  event.preventDefault();
+  sum = [];
+
+  var item1 = event.target.item.value;
+  var category1 = event.target.category.value;
+  var quantity1 = event.target.quantity.value;
+  quantity1 = Number(quantity1);
+
+  new Device(item1, category1, quantity1);
+  for (var i = 0; i < allDevices.length; i++) {
     allDevices[i].getRandomPrice(350, 750);
     allDevices[i].getTotalPrice();
-    saveToLS();
-    renderTable();
+  }
+  table.textContent = '';
+  var DataRow = document.createElement("tr");
+  table.appendChild(DataRow);
 
-    }
+  addheader();
+  for (var i = 0; i < allDevices.length; i++) {
+    allDevices[i].renderTable();
 
-})
+  }
+addfooter();
+  saveToLS();
+});
 
 function saveToLS() {
-    var sendDevice = JSON.stringify(allDevices);
-    localStorage.setItem('devices', sendDevice);
-
+  var sendDevice = JSON.stringify(allDevices);
+  localStorage.setItem("devices", sendDevice);
 }
 
 function getDevice() {
-    var getBack = localStorage.getItem('devices');
+  var getBack = localStorage.getItem("devices");
 
-    if (getBack) {
-        getBack = JSON.parse(getBack);
-    }
-
-
-
+  if (getBack) {
+    getBack = JSON.parse(getBack);
+  }
 }
 
 getDevice();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function randomNum(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
